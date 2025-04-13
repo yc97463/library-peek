@@ -4,8 +4,19 @@ import { StatsCard } from "./stats-card"
 import { OccupancyData, ViewMode } from "@/types"
 
 export function StatsGrid({ data, viewMode }: { data: OccupancyData[], viewMode: ViewMode }) {
+    if (!data.length) {
+        return (
+            <div className="grid gap-4 md:grid-cols-4">
+                <StatsCard title="目前人數" value={0} />
+                <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}最高`} value={0} />
+                <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}最低`} value={0} />
+                <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}平均人數`} value={0} />
+            </div>
+        )
+    }
+
     const currentCount = data[data.length - 1].count
-    const prevCount = data[data.length - 2].count
+    const prevCount = data.length > 1 ? data[data.length - 2].count : currentCount
     const maxCount = Math.max(...data.map(d => d.count))
     const minCount = data
         .map(d => d.count)
