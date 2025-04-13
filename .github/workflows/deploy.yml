@@ -19,13 +19,19 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '22'
+          node-version: '20'
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm install
 
       - name: Run crawler (Node.js)
         run: npm run fetch
+
+      - name: Build Next.js application
+        run: npm run build
+        env:
+          NEXT_PUBLIC_BASE_PATH: /library-peek
 
       - name: Commit new data
         env:
@@ -42,4 +48,4 @@ jobs:
         uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.DEPLOY_TOKEN }}
-          publish_dir: ./public
+          publish_dir: ./out
