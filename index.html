@@ -1,15 +1,43 @@
 <!DOCTYPE html>
 <html lang="zh-Hant">
+
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>東華圖書館在館人數</title>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, sans-serif;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .chart-container {
+      margin-top: 20px;
+      position: relative;
+      height: 60vh;
+    }
+
+    select {
+      padding: 8px;
+      border-radius: 4px;
+      margin: 10px 0;
+    }
+  </style>
 </head>
+
 <body>
   <h1>東華圖書館在館人數趨勢</h1>
-  <label for="dateSelect">選擇日期：</label>
-  <select id="dateSelect"></select>
-  <canvas id="chart" width="800" height="400"></canvas>
+  <div>
+    <label for="dateSelect">選擇日期：</label>
+    <select id="dateSelect"></select>
+  </div>
+  <div class="chart-container">
+    <canvas id="chart"></canvas>
+  </div>
   <script src="main.js"></script>
 </body>
+
 </html>
