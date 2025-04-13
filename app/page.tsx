@@ -8,7 +8,6 @@ import { Badge } from "@/components/ui/badge"
 import { Maximize2, Minimize2, RefreshCw } from "lucide-react"
 import { useState, useEffect } from "react"
 import { CartesianGrid, Line as RechartsLine, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Line } from "recharts"
-import { ChartTooltip } from "@/components/ui/chart"
 import { OccupancyData, ChartData, ViewMode } from "@/types"
 
 export default function Home() {
@@ -23,7 +22,14 @@ export default function Home() {
   }, [dates])
 
   const getFilteredData = (data: OccupancyData[]) => {
-    return viewMode === "3h" ? data.slice(-36) : data
+    switch (viewMode) {
+      case "3h":
+        return data.slice(-36);
+      case "6h":
+        return data.slice(-72);
+      default:
+        return data;
+    }
   }
 
   const processChartData = (data: OccupancyData[]): ChartData[] => {
@@ -46,11 +52,11 @@ export default function Home() {
 
   return (
     <div className={isFullscreen ? 'fixed inset-0 z-50 bg-background' : ''}>
-      <div className="container space-y-6 py-8">
+      <div className="container mx-auto space-y-6 py-8">
         <div className="flex flex-col items-center gap-4">
           <h1 className="text-3xl font-bold">東華圖書館在館人數趨勢</h1>
 
-          <div className="w-full max-w-4xl space-y-6">
+          <div className="w-full space-y-6">
             <Controls
               dates={dates}
               selectedDate={selectedDate}
@@ -62,7 +68,7 @@ export default function Home() {
               onFullscreenToggle={() => setIsFullscreen(!isFullscreen)}
             />
 
-            <StatsGrid data={filteredData} />
+            <StatsGrid data={filteredData} viewMode={viewMode} />
 
             <Card className="p-4">
               <OccupancyChart
@@ -123,7 +129,13 @@ function Controls({
           variant={viewMode === "3h" ? "default" : "outline"}
           onClick={() => onViewModeChange("3h")}
         >
-          近3小時
+          近 3 小時
+        </Button>
+        <Button
+          variant={viewMode === "6h" ? "default" : "outline"}
+          onClick={() => onViewModeChange("6h")}
+        >
+          近 6 小時
         </Button>
         <Button variant="outline" onClick={onRefresh}>
           <RefreshCw className="h-4 w-4" />
@@ -151,7 +163,7 @@ function DateSelector({ dates, selected, onSelect }: { dates: string[], selected
   )
 }
 
-function StatsGrid({ data }: { data: OccupancyData[] }) {
+function StatsGrid({ data, viewMode }: { data: OccupancyData[], viewMode: ViewMode }) {
   const currentCount = data[data.length - 1].count
   const prevCount = data[data.length - 2].count
   const maxCount = Math.max(...data.map(d => d.count))
@@ -177,9 +189,9 @@ function StatsGrid({ data }: { data: OccupancyData[] }) {
         value={currentCount}
         extra={getTrendBadge()}
       />
-      <StatsCard title="今日最高" value={maxCount} />
-      <StatsCard title="今日最低" value={minCount} />
-      <StatsCard title="平均人數" value={avgCount} />
+      <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}最高`} value={maxCount} />
+      <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}最低`} value={minCount} />
+      <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}平均人數`} value={avgCount} />
     </div>
   )
 }
