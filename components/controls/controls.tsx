@@ -25,7 +25,7 @@ export function Controls({
     onFullscreenToggle
 }: ControlsProps) {
     return (
-        <div className="flex justify-between items-center gap-4 flex-wrap">
+        <div className="flex justify-between items-center gap-6 flex-wrap">
             <DateSelector dates={dates} selected={selectedDate} onSelect={onDateChange} />
             <div className="flex gap-2">
                 <Button
