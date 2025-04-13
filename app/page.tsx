@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
 import { Maximize2, Minimize2, RefreshCw } from "lucide-react"
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { CartesianGrid, Line as RechartsLine, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Line } from "recharts"
 import { OccupancyData, ChartData, ViewMode } from "@/types"
 
@@ -16,10 +16,32 @@ export default function Home() {
   const { data: occupancy, mutate } = useOccupancy(selectedDate)
   const [isFullscreen, setIsFullscreen] = useState(false)
   const [viewMode, setViewMode] = useState<ViewMode>("all")
+  const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (dates?.length) setSelectedDate(dates[dates.length - 1])
   }, [dates])
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(document.fullscreenElement !== null)
+    }
+
+    document.addEventListener('fullscreenchange', handleFullscreenChange)
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange)
+  }, [])
+
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement && containerRef.current) {
+        await containerRef.current.requestFullscreen()
+      } else if (document.fullscreenElement) {
+        await document.exitFullscreen()
+      }
+    } catch (err) {
+      console.error('Error toggling fullscreen:', err)
+    }
+  }
 
   const getFilteredData = (data: OccupancyData[]) => {
     switch (viewMode) {
@@ -51,7 +73,10 @@ export default function Home() {
   const chartData = processChartData(filteredData)
 
   return (
-    <div className={isFullscreen ? 'fixed inset-0 z-50 bg-background' : ''}>
+    <div
+      ref={containerRef}
+      className={isFullscreen ? 'fixed inset-0 z-50 bg-background' : ''}
+    >
       <div className="container mx-auto space-y-6 py-8">
         <div className="flex flex-col items-center gap-4">
           <h1 className="text-3xl font-bold">東華圖書館在館人數趨勢</h1>
@@ -65,7 +90,7 @@ export default function Home() {
               onViewModeChange={setViewMode}
               onRefresh={mutate}
               isFullscreen={isFullscreen}
-              onFullscreenToggle={() => setIsFullscreen(!isFullscreen)}
+              onFullscreenToggle={toggleFullscreen}
             />
 
             <StatsGrid data={filteredData} viewMode={viewMode} />
@@ -305,6 +330,6 @@ function StatsCard({ title, value, extra }: { title: string, value: number, extr
       <CardContent>
         <div className="text-2xl font-bold">{value}</div>
       </CardContent>
-    </Card>
+    </Card >
   )
 }
