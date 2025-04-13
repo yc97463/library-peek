@@ -33,6 +33,31 @@ function loadChart(date) {
       const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString());
       const counts = data.map(d => d.count);
 
+      // 更新統計卡片
+      const currentCount = counts[counts.length - 1];
+      const prevCount = counts[counts.length - 2];
+      const maxCount = Math.max(...counts);
+      const minCount = Math.min(...counts);
+      const avgCount = Math.round(counts.reduce((a, b) => a + b, 0) / counts.length);
+
+      // 計算趨勢
+      const trendBadge = document.getElementById('trendBadge');
+      if (currentCount > prevCount) {
+        trendBadge.textContent = '上升中';
+        trendBadge.className = 'trend-badge trend-up';
+      } else if (currentCount < prevCount) {
+        trendBadge.textContent = '下降中';
+        trendBadge.className = 'trend-badge trend-down';
+      } else {
+        trendBadge.textContent = '持平';
+        trendBadge.className = 'trend-badge trend-stable';
+      }
+
+      document.getElementById('currentCount').textContent = currentCount;
+      document.getElementById('maxCount').textContent = maxCount;
+      document.getElementById('minCount').textContent = minCount;
+      document.getElementById('avgCount').textContent = avgCount;
+
       // 計算移動平均趨勢線 (5點移動平均)
       const trend = calculateMovingAverage(counts, 5);
 
@@ -69,15 +94,16 @@ function loadChart(date) {
                 data: counts,
                 fill: false,
                 tension: 0.1,
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.5)'
+                borderColor: '#4CAF50',
+                backgroundColor: 'rgba(76, 175, 80, 0.5)',
+                borderWidth: 2
               },
               {
                 label: '趨勢線',
                 data: trend,
                 fill: false,
                 tension: 0.3,
-                borderColor: 'rgba(255, 99, 132, 0.8)',
+                borderColor: 'rgba(33, 150, 243, 0.8)',
                 borderDash: [5, 5],
                 pointRadius: 0
               }
@@ -85,6 +111,7 @@ function loadChart(date) {
           },
           options: {
             responsive: true,
+            maintainAspectRatio: false,
             interaction: {
               intersect: false,
               mode: 'index'
@@ -92,21 +119,45 @@ function loadChart(date) {
             plugins: {
               title: {
                 display: true,
-                text: '圖書館人流量趨勢圖'
+                text: '圖書館人流量趨勢圖',
+                font: {
+                  size: 16,
+                  weight: 'bold'
+                }
+              },
+              legend: {
+                position: 'top'
               }
             },
             scales: {
               y: {
-                beginAtZero: true,
+                beginAtZero: false, // 改為 false，不從 0 開始
                 title: {
                   display: true,
                   text: '人數'
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.1)'
+                },
+                // 新增：設定較小的範圍
+                suggestedMin: function (context) {
+                  const values = context.chart.data.datasets[0].data;
+                  const min = Math.min(...values);
+                  return Math.max(0, min - 50); // 最小值再減 50，但不小於 0
+                },
+                suggestedMax: function (context) {
+                  const values = context.chart.data.datasets[0].data;
+                  const max = Math.max(...values);
+                  return max + 50; // 最大值再加 50
                 }
               },
               x: {
                 title: {
                   display: true,
                   text: '時間'
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.1)'
                 }
               }
             }
