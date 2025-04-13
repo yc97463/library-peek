@@ -80,13 +80,15 @@ export default function Home() {
   return (
     <div
       ref={containerRef}
-      className={isFullscreen ? 'fixed inset-0 z-50 bg-background' : ''}
+      className={`${isFullscreen ? 'fixed inset-0 z-50 bg-background flex flex-col overflow-hidden' : ''}`}
     >
-      <div className="container mx-auto space-y-6 py-8">
-        <div className="flex flex-col items-center gap-4">
-          <h1 className="text-3xl font-bold">東華圖書館在館人數趨勢</h1>
+      <div className={`container mx-auto ${isFullscreen ? 'flex-1 py-4 flex flex-col min-h-0' : 'py-8'} space-y-4`}>
+        <div className="flex flex-col items-center gap-2 h-full">
+          <h1 className={`font-bold ${isFullscreen ? 'text-2xl' : 'text-3xl'}`}>
+            東華圖書館在館人數趨勢
+          </h1>
 
-          <div className="w-full space-y-6">
+          <div className={`w-full ${isFullscreen ? 'flex-1 flex flex-col min-h-0 gap-4' : 'space-y-6'}`}>
             <Controls
               dates={dates}
               selectedDate={selectedDate}
@@ -100,12 +102,18 @@ export default function Home() {
 
             <StatsGrid data={filteredData} viewMode={viewMode} />
 
-            <OccupancyChart
-              data={chartData}
-              height={isFullscreen ? "600px" : "400px"}
-            />
+            <div className={`${isFullscreen ? 'flex-1 min-h-0 flex w-full' : 'w-full'}`}>
+              <div className="w-full h-full flex flex-col">
+                <div className="flex-1 min-h-0">
+                  <OccupancyChart
+                    data={chartData}
+                    height={isFullscreen ? "100%" : "400px"}
+                  />
+                </div>
+              </div>
+            </div>
 
-            <footer className="mt-8 rounded-lg border bg-card p-6 shadow-sm">
+            <footer className={`rounded-lg border bg-card ${isFullscreen ? 'p-4' : 'p-6'} shadow-sm`}>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-4">
                   <h3 className="text-sm font-medium text-primary">更新資訊</h3>
