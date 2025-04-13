@@ -131,13 +131,24 @@ function loadChart(date) {
             },
             scales: {
               y: {
-                beginAtZero: true,
+                beginAtZero: false, // 改為 false，不從 0 開始
                 title: {
                   display: true,
                   text: '人數'
                 },
                 grid: {
                   color: 'rgba(0, 0, 0, 0.1)'
+                },
+                // 新增：設定較小的範圍
+                suggestedMin: function (context) {
+                  const values = context.chart.data.datasets[0].data;
+                  const min = Math.min(...values);
+                  return Math.max(0, min - 50); // 最小值再減 50，但不小於 0
+                },
+                suggestedMax: function (context) {
+                  const values = context.chart.data.datasets[0].data;
+                  const max = Math.max(...values);
+                  return max + 50; // 最大值再加 50
                 }
               },
               x: {
