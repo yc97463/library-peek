@@ -53,6 +53,31 @@
       font-size: 1.5rem;
       font-weight: bold;
       color: #2c3e50;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .trend-badge {
+      font-size: 0.8rem;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-weight: normal;
+    }
+
+    .trend-up {
+      background-color: #e8f5e9;
+      color: #2e7d32;
+    }
+
+    .trend-down {
+      background-color: #ffebee;
+      color: #c62828;
+    }
+
+    .trend-stable {
+      background-color: #e3f2fd;
+      color: #1565c0;
     }
 
     .chart-container {
@@ -107,7 +132,10 @@
   <div class="stats-container">
     <div class="stat-card">
       <h3>目前人數</h3>
-      <p id="currentCount">-</p>
+      <p>
+        <span id="currentCount">-</span>
+        <span id="trendBadge" class="trend-badge"></span>
+      </p>
     </div>
     <div class="stat-card">
       <h3>今日最高</h3>

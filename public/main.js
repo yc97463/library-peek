@@ -35,9 +35,23 @@ function loadChart(date) {
 
       // 更新統計卡片
       const currentCount = counts[counts.length - 1];
+      const prevCount = counts[counts.length - 2];
       const maxCount = Math.max(...counts);
       const minCount = Math.min(...counts);
       const avgCount = Math.round(counts.reduce((a, b) => a + b, 0) / counts.length);
+
+      // 計算趨勢
+      const trendBadge = document.getElementById('trendBadge');
+      if (currentCount > prevCount) {
+        trendBadge.textContent = '上升中';
+        trendBadge.className = 'trend-badge trend-up';
+      } else if (currentCount < prevCount) {
+        trendBadge.textContent = '下降中';
+        trendBadge.className = 'trend-badge trend-down';
+      } else {
+        trendBadge.textContent = '持平';
+        trendBadge.className = 'trend-badge trend-stable';
+      }
 
       document.getElementById('currentCount').textContent = currentCount;
       document.getElementById('maxCount').textContent = maxCount;
