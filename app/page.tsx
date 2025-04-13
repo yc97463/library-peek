@@ -1,13 +1,11 @@
 "use client"
 
 import { useDates, useOccupancy } from "@/lib/hooks"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import { Maximize2, Minimize2, RefreshCw, TrendingDown, TrendingUp, Minus } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
-import { CartesianGrid, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Line } from "recharts"
+import { Controls } from "@/components/controls/controls"
+import { StatsGrid } from "@/components/stats/stats-grid"
+import { OccupancyChart } from "@/components/chart/occupancy-chart"
+import { calculateTrend } from "@/lib/utils"
 import { OccupancyData, ChartData, ViewMode } from "@/types"
 
 export default function Home() {
@@ -59,7 +57,7 @@ export default function Home() {
     const trend = calculateTrend(counts)
 
     return data.map((d, i) => ({
-      time: d.timestamp,  // 不需要在這裡轉換時間格式
+      time: d.timestamp,
       count: d.count,
       trend: trend[i]
     }))
@@ -95,12 +93,10 @@ export default function Home() {
 
             <StatsGrid data={filteredData} viewMode={viewMode} />
 
-            <Card className="p-4">
-              <OccupancyChart
-                data={chartData}
-                height={isFullscreen ? "600px" : "400px"}
-              />
-            </Card>
+            <OccupancyChart
+              data={chartData}
+              height={isFullscreen ? "600px" : "400px"}
+            />
 
             <footer className="text-center text-sm text-muted-foreground">
               資料每 5 分鐘更新一次 • 頁面每 3 分鐘自動重新整理
@@ -109,264 +105,5 @@ export default function Home() {
         </div>
       </div>
     </div>
-  )
-}
-
-// Utility functions
-function calculateTrend(counts: number[]): number[] {
-  return counts.map((_, i, arr) => {
-    const window = arr.slice(Math.max(0, i - 2), Math.min(arr.length, i + 3))
-    return window.reduce((a, b) => a + b, 0) / window.length
-  })
-}
-
-// Component definitions...
-function Controls({
-  dates,
-  selectedDate,
-  onDateChange,
-  viewMode,
-  onViewModeChange,
-  onRefresh,
-  isFullscreen,
-  onFullscreenToggle
-}: {
-  dates: string[],
-  selectedDate: string,
-  onDateChange: (date: string) => void,
-  viewMode: ViewMode,
-  onViewModeChange: (mode: ViewMode) => void,
-  onRefresh: () => void,
-  isFullscreen: boolean,
-  onFullscreenToggle: () => void
-}) {
-  return (
-    <div className="flex justify-between items-center gap-4 flex-wrap">
-      <DateSelector dates={dates} selected={selectedDate} onSelect={onDateChange} />
-      <div className="flex gap-2">
-        <Button
-          variant={viewMode === "all" ? "default" : "outline"}
-          onClick={() => onViewModeChange("all")}
-        >
-          全日
-        </Button>
-        <Button
-          variant={viewMode === "3h" ? "default" : "outline"}
-          onClick={() => onViewModeChange("3h")}
-        >
-          近 3 小時
-        </Button>
-        <Button
-          variant={viewMode === "6h" ? "default" : "outline"}
-          onClick={() => onViewModeChange("6h")}
-        >
-          近 6 小時
-        </Button>
-        <Button variant="outline" onClick={onRefresh}>
-          <RefreshCw className="h-4 w-4" />
-        </Button>
-        <Button variant="outline" size="icon" onClick={onFullscreenToggle}>
-          {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
-        </Button>
-      </div>
-    </div>
-  )
-}
-
-function DateSelector({ dates, selected, onSelect }: { dates: string[], selected: string, onSelect: (date: string) => void }) {
-  return (
-    <Select value={selected} onValueChange={onSelect}>
-      <SelectTrigger className="w-[180px]">
-        <SelectValue placeholder="選擇日期" />
-      </SelectTrigger>
-      <SelectContent>
-        {dates.map((date: string) => (
-          <SelectItem key={date} value={date}>{date}</SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
-  )
-}
-
-function StatsGrid({ data, viewMode }: { data: OccupancyData[], viewMode: ViewMode }) {
-  const currentCount = data[data.length - 1].count
-  const prevCount = data[data.length - 2].count
-  const maxCount = Math.max(...data.map(d => d.count))
-  const minCount = data
-    .map(d => d.count)
-    .filter(count => count > 0) // 過濾掉 0
-    .sort((a, b) => a - b)[0] || 0 // 取最小值，如果沒有非 0 值則 return 0
-  const avgCount = Math.round(data.reduce((a, b) => a + b.count, 0) / data.length)
-
-  const getTrendInfo = () => {
-    if (currentCount > prevCount) {
-      return {
-        badge: <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">增加中</Badge>,
-        icon: <TrendingUp className="absolute right-4 bottom-4 h-24 w-24 text-emerald-100" />,
-        className: "bg-emerald-50"
-      }
-    } else if (currentCount < prevCount) {
-      return {
-        badge: <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100">減少中</Badge>,
-        icon: <TrendingDown className="absolute right-4 bottom-4 h-24 w-24 text-rose-100" />,
-        className: "bg-rose-50"
-      }
-    }
-    return {
-      badge: <Badge className="bg-sky-100 text-sky-700 hover:bg-sky-100">持平</Badge>,
-      icon: <Minus className="absolute right-4 bottom-4 h-24 w-24 text-sky-100" />,
-      className: "bg-sky-50"
-    }
-  }
-
-  const trendInfo = getTrendInfo()
-
-  return (
-    <div className="grid gap-4 md:grid-cols-4">
-      <StatsCard
-        title="目前人數"
-        value={currentCount}
-        extra={trendInfo.badge}
-        className={trendInfo.className}
-        icon={trendInfo.icon}
-      />
-      <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}最高`} value={maxCount} />
-      <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}最低`} value={minCount} />
-      <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}平均人數`} value={avgCount} />
-    </div>
-  )
-}
-
-const chartConfig = {
-  count: {
-    label: "人數",
-    color: "hsl(var(--chart-1))"
-  },
-  trend: {
-    label: "趨勢",
-    color: "hsl(var(--chart-2))"
-  }
-} as const
-
-function OccupancyChart({ data, height }: { data: any[], height: string }) {
-  const colors = {
-    primary: "#000000",
-    muted: "#666666",
-    background: "#FFFFFF"
-  }
-
-  return (
-    <Card className="p-4">
-      <ResponsiveContainer width="100%" height={parseInt(height)}>
-        <LineChart
-          data={data}
-          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
-        >
-          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.muted} opacity={0.2} />
-          <XAxis
-            dataKey="time"
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            stroke={colors.muted}
-            fontSize={12}
-            tickFormatter={(value) => {
-              const date = new Date(value)
-              return date.toLocaleTimeString('zh-TW', {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
-              })
-            }}
-          />
-          <YAxis
-            tickLine={false}
-            axisLine={false}
-            tickMargin={8}
-            stroke={colors.muted}
-            fontSize={12}
-          />
-          <Tooltip
-            content={({ active, payload, label }) => {
-              if (!active || !payload) return null;
-              return (
-                <div className="rounded-lg border bg-background/80 backdrop-blur-sm p-2 shadow-sm">
-                  <p className="text-xs text-muted-foreground">{label}</p>
-                  {payload.map((entry) => (
-                    <p key={entry.name} className="text-sm font-medium flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full" style={{ background: entry.stroke }} />
-                      <span>{entry.name}: {entry.value}</span>
-                    </p>
-                  ))}
-                </div>
-              );
-            }}
-          />
-          <Line
-            name="人數"
-            type="monotone"
-            dataKey="count"
-            stroke={colors.primary}
-            strokeWidth={2}
-            dot={{
-              r: 3,
-              fill: colors.background,
-              stroke: colors.primary,
-              strokeWidth: 2
-            }}
-            activeDot={{
-              r: 6,
-              fill: colors.primary,
-              stroke: colors.background,
-              strokeWidth: 2
-            }}
-          />
-          <Line
-            name="趨勢"
-            type="monotone"
-            dataKey="trend"
-            stroke={colors.muted}
-            strokeWidth={1.5}
-            strokeDasharray="5 5"
-            dot={false}
-          />
-        </LineChart>
-      </ResponsiveContainer>
-    </Card>
-  )
-}
-
-function StatsCard({
-  title,
-  value,
-  extra,
-  className = "",
-  icon
-}: {
-  title: string,
-  value: number,
-  extra?: React.ReactNode,
-  className?: string,
-  icon?: React.ReactNode
-}) {
-  return (
-    <Card className={`relative overflow-hidden ${className}`}>
-      {icon && (
-        <div className="absolute -right-2 -bottom-[32px]">
-          <div className="h-36 w-36">
-            {icon}
-          </div>
-        </div>
-      )}
-      <div className="relative">
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">{title}</CardTitle>
-          {extra}
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{value}</div>
-        </CardContent>
-      </div>
-    </Card>
   )
 }
