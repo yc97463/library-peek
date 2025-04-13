@@ -8,6 +8,8 @@ import { OccupancyChart } from "@/components/chart/occupancy-chart"
 import { calculateTrend } from "@/lib/utils"
 import { OccupancyData, ChartData, ViewMode } from "@/types"
 import { Clock, Globe, Book, Calendar } from "lucide-react"
+import { motion } from "motion/react"
+import { LoadingSpinner } from "@/components/loading"
 
 export default function Home() {
   const { data: dates } = useDates()
@@ -65,7 +67,11 @@ export default function Home() {
   }
 
   if (!dates?.length || !occupancy?.length) {
-    return <div className="flex h-screen items-center justify-center">載入中...</div>
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <LoadingSpinner />
+      </div>
+    )
   }
 
   const filteredData = getFilteredData(occupancy)
