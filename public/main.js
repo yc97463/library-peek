@@ -10,21 +10,42 @@ const fetchOptions = {
   }
 };
 
-fetch('data/dates.json', fetchOptions)
-  .then(res => res.json())
-  .then(dates => {
-    dates.forEach(date => {
-      const option = document.createElement('option');
-      option.value = date;
-      option.textContent = date;
-      dateSelect.appendChild(option);
+const REFRESH_INTERVAL = 3 * 60 * 1000; // 3分鐘
+let currentDate;
+
+function initializeApp() {
+  fetch('data/dates.json', fetchOptions)
+    .then(res => res.json())
+    .then(dates => {
+      dates.forEach(date => {
+        const option = document.createElement('option');
+        option.value = date;
+        option.textContent = date;
+        dateSelect.appendChild(option);
+      });
+      currentDate = dates[dates.length - 1];
+      dateSelect.value = currentDate;
+      loadChart(currentDate);
     });
-    loadChart(dates[dates.length - 1]);
-  });
+}
 
 dateSelect.addEventListener('change', () => {
-  loadChart(dateSelect.value);
+  currentDate = dateSelect.value;
+  loadChart(currentDate);
 });
+
+// 自動重新整理功能
+function autoRefresh() {
+  if (currentDate === dateSelect.value) { // 只在查看最新日期時自動更新
+    initializeApp();
+  }
+}
+
+// 啟動自動重新整理
+setInterval(autoRefresh, REFRESH_INTERVAL);
+
+// 初始化應用
+initializeApp();
 
 function loadChart(date) {
   fetch(`data/${date}.json`, fetchOptions)

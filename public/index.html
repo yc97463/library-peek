@@ -156,10 +156,15 @@
   </div>
 
   <div class="footer">
-    <p>資料每5分鐘更新一次</p>
+    <p>資料每 5 分鐘更新一次 • 頁面每 3 分鐘自動重新整理</p>
   </div>
 
-  <script src="main.js"></script>
+  <script>
+    // 添加時間戳防止快取
+    const scriptElement = document.createElement('script');
+    scriptElement.src = `main.js?v=${new Date().getTime()}`;
+    document.body.appendChild(scriptElement);
+  </script>
 </body>
 
 </html>
