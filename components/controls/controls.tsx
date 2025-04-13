@@ -31,25 +31,37 @@ export function Controls({
                 <Button
                     variant={viewMode === "all" ? "default" : "outline"}
                     onClick={() => onViewModeChange("all")}
+                    className="cursor-pointer"
                 >
                     全日
                 </Button>
                 <Button
                     variant={viewMode === "3h" ? "default" : "outline"}
                     onClick={() => onViewModeChange("3h")}
+                    className="cursor-pointer"
                 >
                     近 3 小時
                 </Button>
                 <Button
                     variant={viewMode === "6h" ? "default" : "outline"}
                     onClick={() => onViewModeChange("6h")}
+                    className="cursor-pointer"
                 >
                     近 6 小時
                 </Button>
-                <Button variant="outline" onClick={onRefresh}>
+                <Button
+                    variant="outline"
+                    onClick={onRefresh}
+                    className="cursor-pointer"
+                >
                     <RefreshCw className="h-4 w-4" />
                 </Button>
-                <Button variant="outline" size="icon" onClick={onFullscreenToggle}>
+                <Button
+                    variant="outline"
+                    size="icon"
+                    onClick={onFullscreenToggle}
+                    className="cursor-pointer"
+                >
                     {isFullscreen ? <Minimize2 className="h-4 w-4" /> : <Maximize2 className="h-4 w-4" />}
                 </Button>
             </div>
