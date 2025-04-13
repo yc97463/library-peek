@@ -33,6 +33,17 @@ function loadChart(date) {
       const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString());
       const counts = data.map(d => d.count);
 
+      // 更新統計卡片
+      const currentCount = counts[counts.length - 1];
+      const maxCount = Math.max(...counts);
+      const minCount = Math.min(...counts);
+      const avgCount = Math.round(counts.reduce((a, b) => a + b, 0) / counts.length);
+
+      document.getElementById('currentCount').textContent = currentCount;
+      document.getElementById('maxCount').textContent = maxCount;
+      document.getElementById('minCount').textContent = minCount;
+      document.getElementById('avgCount').textContent = avgCount;
+
       // 計算移動平均趨勢線 (5點移動平均)
       const trend = calculateMovingAverage(counts, 5);
 
@@ -69,15 +80,16 @@ function loadChart(date) {
                 data: counts,
                 fill: false,
                 tension: 0.1,
-                borderColor: 'rgb(75, 192, 192)',
-                backgroundColor: 'rgba(75, 192, 192, 0.5)'
+                borderColor: '#4CAF50',
+                backgroundColor: 'rgba(76, 175, 80, 0.5)',
+                borderWidth: 2
               },
               {
                 label: '趨勢線',
                 data: trend,
                 fill: false,
                 tension: 0.3,
-                borderColor: 'rgba(255, 99, 132, 0.8)',
+                borderColor: 'rgba(33, 150, 243, 0.8)',
                 borderDash: [5, 5],
                 pointRadius: 0
               }
@@ -85,6 +97,7 @@ function loadChart(date) {
           },
           options: {
             responsive: true,
+            maintainAspectRatio: false,
             interaction: {
               intersect: false,
               mode: 'index'
@@ -92,7 +105,14 @@ function loadChart(date) {
             plugins: {
               title: {
                 display: true,
-                text: '圖書館人流量趨勢圖'
+                text: '圖書館人流量趨勢圖',
+                font: {
+                  size: 16,
+                  weight: 'bold'
+                }
+              },
+              legend: {
+                position: 'top'
               }
             },
             scales: {
@@ -101,12 +121,18 @@ function loadChart(date) {
                 title: {
                   display: true,
                   text: '人數'
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.1)'
                 }
               },
               x: {
                 title: {
                   display: true,
                   text: '時間'
+                },
+                grid: {
+                  color: 'rgba(0, 0, 0, 0.1)'
                 }
               }
             }
