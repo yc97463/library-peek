@@ -8,7 +8,10 @@ const fetchOptions = {
     }
 };
 
-const fetcher = (url: string) => fetch(url, fetchOptions).then(res => res.json())
+// 獲取基礎路徑
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
+const fetcher = (url: string) => fetch(`${basePath}${url}`, fetchOptions).then(res => res.json())
 
 export function useDates() {
     return useSWR('/data/dates.json', fetcher, {
