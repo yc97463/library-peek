@@ -1,12 +1,21 @@
-import { ChartConfig } from "@/components/ui/chart"
+export interface ChartConfig {
+    count: {
+        label: string;
+        color: string;
+    };
+    trend: {
+        label: string;
+        color: string;
+    };
+}
 
 export const chartConfig = {
     count: {
-        label: "即時人數",
+        label: "人數",
         color: "hsl(var(--chart-1))"
     },
     trend: {
-        label: "趨勢線",
+        label: "趨勢",
         color: "hsl(var(--chart-2))"
     }
 } satisfies ChartConfig

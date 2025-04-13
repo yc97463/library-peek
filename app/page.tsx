@@ -7,9 +7,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Maximize2, Minimize2, RefreshCw } from "lucide-react"
 import { useState, useEffect } from "react"
-import { CartesianGrid, Line as RechartsLine, LineChart, XAxis, YAxis, Tooltip } from "recharts"
-import { ChartConfig, ChartContainer, ChartTooltipContent } from "@/components/ui/chart"
-import { chartConfig } from "@/config/chart"
+import { CartesianGrid, Line as RechartsLine, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Line } from "recharts"
+import { ChartTooltip } from "@/components/ui/chart"
 import { OccupancyData, ChartData, ViewMode } from "@/types"
 
 export default function Home() {
@@ -32,7 +31,7 @@ export default function Home() {
     const trend = calculateTrend(counts)
 
     return data.map((d, i) => ({
-      time: new Date(d.timestamp).toLocaleTimeString(),
+      time: d.timestamp,  // 不需要在這裡轉換時間格式
       count: d.count,
       trend: trend[i]
     }))
@@ -68,7 +67,6 @@ export default function Home() {
             <Card className="p-4">
               <OccupancyChart
                 data={chartData}
-                config={chartConfig}
                 height={isFullscreen ? "600px" : "400px"}
               />
             </Card>
@@ -157,7 +155,10 @@ function StatsGrid({ data }: { data: OccupancyData[] }) {
   const currentCount = data[data.length - 1].count
   const prevCount = data[data.length - 2].count
   const maxCount = Math.max(...data.map(d => d.count))
-  const minCount = Math.min(...data.map(d => d.count))
+  const minCount = data
+    .map(d => d.count)
+    .filter(count => count > 0) // 過濾掉 0
+    .sort((a, b) => a - b)[0] || 0 // 取最小值，如果沒有非 0 值則 return 0
   const avgCount = Math.round(data.reduce((a, b) => a + b.count, 0) / data.length)
 
   const getTrendBadge = () => {
@@ -183,55 +184,101 @@ function StatsGrid({ data }: { data: OccupancyData[] }) {
   )
 }
 
-function OccupancyChart({ data, config, height }: { data: any[], config: ChartConfig, height: string }) {
-  const chartData = data.map(d => ({
-    time: new Date(d.timestamp).toLocaleTimeString(),
-    count: d.count,
-    trend: calculateTrend(data.map(d => d.count))
-  }))
+const chartConfig = {
+  count: {
+    label: "人數",
+    color: "hsl(var(--chart-1))"
+  },
+  trend: {
+    label: "趨勢",
+    color: "hsl(var(--chart-2))"
+  }
+} as const
+
+function OccupancyChart({ data, height }: { data: any[], height: string }) {
+  const colors = {
+    primary: "#000000",
+    muted: "#666666",
+    background: "#FFFFFF"
+  }
 
   return (
     <Card className="p-4">
-      <ChartContainer config={chartConfig}>
-        <LineChart data={chartData}>
-          <CartesianGrid vertical={false} />
+      <ResponsiveContainer width="100%" height={parseInt(height)}>
+        <LineChart
+          data={data}
+          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        >
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.muted} opacity={0.2} />
           <XAxis
             dataKey="time"
             tickLine={false}
             axisLine={false}
             tickMargin={8}
-            tickFormatter={(value) => value.slice(0, 5)}
+            stroke={colors.muted}
+            fontSize={12}
+            tickFormatter={(value) => {
+              const date = new Date(value)
+              return date.toLocaleTimeString('zh-TW', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+              })
+            }}
           />
           <YAxis
             tickLine={false}
             axisLine={false}
             tickMargin={8}
+            stroke={colors.muted}
+            fontSize={12}
           />
           <Tooltip
-            content={<ChartTooltipContent />}
+            content={({ active, payload, label }) => {
+              if (!active || !payload) return null;
+              return (
+                <div className="rounded-lg border bg-background/80 backdrop-blur-sm p-2 shadow-sm">
+                  <p className="text-xs text-muted-foreground">{label}</p>
+                  {payload.map((entry) => (
+                    <p key={entry.name} className="text-sm font-medium flex items-center gap-2">
+                      <span className="w-2 h-2 rounded-full" style={{ background: entry.stroke }} />
+                      <span>{entry.name}: {entry.value}</span>
+                    </p>
+                  ))}
+                </div>
+              );
+            }}
           />
-          <RechartsLine
-            type="natural"
+          <Line
+            name="人數"
+            type="monotone"
             dataKey="count"
-            stroke="hsl(var(--chart-1))"
+            stroke={colors.primary}
             strokeWidth={2}
             dot={{
-              fill: "hsl(var(--chart-1))",
+              r: 3,
+              fill: colors.background,
+              stroke: colors.primary,
+              strokeWidth: 2
             }}
             activeDot={{
               r: 6,
+              fill: colors.primary,
+              stroke: colors.background,
+              strokeWidth: 2
             }}
           />
-          <RechartsLine
-            type="natural"
+          <Line
+            name="趨勢"
+            type="monotone"
             dataKey="trend"
-            stroke="hsl(var(--chart-2))"
-            strokeWidth={2}
+            stroke={colors.muted}
+            strokeWidth={1.5}
             strokeDasharray="5 5"
             dot={false}
           />
         </LineChart>
-      </ChartContainer>
+      </ResponsiveContainer>
     </Card>
   )
 }

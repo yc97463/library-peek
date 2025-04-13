@@ -17,9 +17,18 @@ export function useDates() {
 }
 
 export function useOccupancy(date?: string) {
-    return useSWR(date ? `/data/${date}.json` : null, fetcher, {
-        refreshInterval: (date && isLatestDate(date)) ? 3 * 60 * 1000 : 0 // Only auto-refresh for latest date
+    const { data, error, isLoading, mutate } = useSWR(date ? `/data/${date}.json` : null, fetcher, {
+        refreshInterval: (date && isLatestDate(date)) ? 3 * 60 * 1000 : 0,
+        fallbackData: [], // 提供初始數據
+        revalidateOnMount: true, // 確保組件掛載時立即獲取數據
     })
+
+    return {
+        data: data || [],
+        error,
+        isLoading,
+        mutate
+    }
 }
 
 // Helper to check if the date is the latest date
