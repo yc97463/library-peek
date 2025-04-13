@@ -64,10 +64,10 @@ function loadChart(date) {
       // 計算趨勢
       const trendBadge = document.getElementById('trendBadge');
       if (currentCount > prevCount) {
-        trendBadge.textContent = '上升中';
+        trendBadge.textContent = '增加中';
         trendBadge.className = 'trend-badge trend-up';
       } else if (currentCount < prevCount) {
-        trendBadge.textContent = '下降中';
+        trendBadge.textContent = '減少中';
         trendBadge.className = 'trend-badge trend-down';
       } else {
         trendBadge.textContent = '持平';
