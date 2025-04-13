@@ -2,7 +2,15 @@ const dateSelect = document.getElementById('dateSelect');
 const chartCanvas = document.getElementById('chart');
 let chart;
 
-fetch('data/dates.json')
+const fetchOptions = {
+  cache: 'no-store',  // HTTP no-cache
+  headers: {
+    'Cache-Control': 'no-cache',
+    'Pragma': 'no-cache'
+  }
+};
+
+fetch('data/dates.json', fetchOptions)
   .then(res => res.json())
   .then(dates => {
     dates.forEach(date => {
@@ -19,7 +27,8 @@ dateSelect.addEventListener('change', () => {
 });
 
 function loadChart(date) {
-  fetch(`data/${date}.json`)
+  // fetch with cache control
+  fetch(`data/${date}.json`, fetchOptions)
     .then(res => res.json())
     .then(data => {
       const labels = data.map(d => new Date(d.timestamp).toLocaleTimeString());
