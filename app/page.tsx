@@ -5,9 +5,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Badge } from "@/components/ui/badge"
-import { Maximize2, Minimize2, RefreshCw } from "lucide-react"
+import { Maximize2, Minimize2, RefreshCw, TrendingDown, TrendingUp, Minus } from "lucide-react"
 import { useState, useEffect, useRef } from "react"
-import { CartesianGrid, Line as RechartsLine, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Line } from "recharts"
+import { CartesianGrid, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Line } from "recharts"
 import { OccupancyData, ChartData, ViewMode } from "@/types"
 
 export default function Home() {
@@ -198,21 +198,37 @@ function StatsGrid({ data, viewMode }: { data: OccupancyData[], viewMode: ViewMo
     .sort((a, b) => a - b)[0] || 0 // 取最小值，如果沒有非 0 值則 return 0
   const avgCount = Math.round(data.reduce((a, b) => a + b.count, 0) / data.length)
 
-  const getTrendBadge = () => {
+  const getTrendInfo = () => {
     if (currentCount > prevCount) {
-      return <Badge variant="default" className="bg-green-500">增加中</Badge>
+      return {
+        badge: <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100">增加中</Badge>,
+        icon: <TrendingUp className="absolute right-4 bottom-4 h-24 w-24 text-emerald-100" />,
+        className: "bg-emerald-50"
+      }
     } else if (currentCount < prevCount) {
-      return <Badge variant="destructive">減少中</Badge>
+      return {
+        badge: <Badge className="bg-rose-100 text-rose-700 hover:bg-rose-100">減少中</Badge>,
+        icon: <TrendingDown className="absolute right-4 bottom-4 h-24 w-24 text-rose-100" />,
+        className: "bg-rose-50"
+      }
     }
-    return <Badge variant="secondary">持平</Badge>
+    return {
+      badge: <Badge className="bg-sky-100 text-sky-700 hover:bg-sky-100">持平</Badge>,
+      icon: <Minus className="absolute right-4 bottom-4 h-24 w-24 text-sky-100" />,
+      className: "bg-sky-50"
+    }
   }
+
+  const trendInfo = getTrendInfo()
 
   return (
     <div className="grid gap-4 md:grid-cols-4">
       <StatsCard
         title="目前人數"
         value={currentCount}
-        extra={getTrendBadge()}
+        extra={trendInfo.badge}
+        className={trendInfo.className}
+        icon={trendInfo.icon}
       />
       <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}最高`} value={maxCount} />
       <StatsCard title={`${viewMode === "all" ? "全日" : "時段"}最低`} value={minCount} />
@@ -320,16 +336,37 @@ function OccupancyChart({ data, height }: { data: any[], height: string }) {
   )
 }
 
-function StatsCard({ title, value, extra }: { title: string, value: number, extra?: React.ReactNode }) {
+function StatsCard({
+  title,
+  value,
+  extra,
+  className = "",
+  icon
+}: {
+  title: string,
+  value: number,
+  extra?: React.ReactNode,
+  className?: string,
+  icon?: React.ReactNode
+}) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-        <CardTitle className="text-sm font-medium">{title}</CardTitle>
-        {extra}
-      </CardHeader>
-      <CardContent>
-        <div className="text-2xl font-bold">{value}</div>
-      </CardContent>
-    </Card >
+    <Card className={`relative overflow-hidden ${className}`}>
+      {icon && (
+        <div className="absolute -right-2 -bottom-[32px]">
+          <div className="h-36 w-36">
+            {icon}
+          </div>
+        </div>
+      )}
+      <div className="relative">
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">{title}</CardTitle>
+          {extra}
+        </CardHeader>
+        <CardContent>
+          <div className="text-2xl font-bold">{value}</div>
+        </CardContent>
+      </div>
+    </Card>
   )
 }
