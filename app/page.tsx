@@ -7,6 +7,7 @@ import { StatsGrid } from "@/components/stats/stats-grid"
 import { OccupancyChart } from "@/components/chart/occupancy-chart"
 import { calculateTrend } from "@/lib/utils"
 import { OccupancyData, ChartData, ViewMode } from "@/types"
+import { Clock, Globe, Book, Calendar } from "lucide-react"
 
 export default function Home() {
   const { data: dates } = useDates()
@@ -98,8 +99,54 @@ export default function Home() {
               height={isFullscreen ? "600px" : "400px"}
             />
 
-            <footer className="text-center text-sm text-muted-foreground">
-              資料每 5 分鐘更新一次 • 頁面每 3 分鐘自動重新整理
+            <footer className="mt-8 rounded-lg border bg-card p-6 shadow-sm">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium text-primary">更新資訊</h3>
+                  <div className="flex flex-col space-y-3 text-sm text-muted-foreground">
+                    <div className="flex items-center gap-3">
+                      <Clock className="h-4 w-4 text-primary/70" />
+                      <span>資料每 5 分鐘更新一次</span>
+                    </div>
+                    <div className="flex items-center gap-3">
+                      <Globe className="h-4 w-4 text-primary/70" />
+                      <span>頁面每 3 分鐘自動重新整理</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium text-primary md:text-right">其他資訊</h3>
+                  <div className="flex flex-col space-y-3 text-sm text-muted-foreground md:items-end">
+                    <div className="flex items-center gap-3 md:flex-row-reverse">
+                      <span>
+                        {new Date(occupancy[occupancy.length - 1].timestamp).toLocaleString('zh-TW', {
+                          year: 'numeric',
+                          month: '2-digit',
+                          day: '2-digit',
+                          hour: '2-digit',
+                          minute: '2-digit',
+                          second: '2-digit'
+                        })}
+                      </span>
+                      <Calendar className="h-4 w-4 text-primary/70" />
+                      <span className="md:hidden">上次更新：</span>
+                      <span className="hidden md:inline">上次更新：</span>
+                    </div>
+                    <div className="flex items-center gap-3 md:flex-row-reverse">
+                      <a
+                        href="https://ndhu.lib.gov.tw"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-primary hover:underline"
+                      >
+                        東華大學圖書館
+                      </a>
+                      <Book className="h-4 w-4 text-primary/70" />
+                      <span>資料來源：</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </footer>
           </div>
         </div>
