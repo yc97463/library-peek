@@ -2,7 +2,7 @@ import { Card } from "@/components/ui/card"
 import { CartesianGrid, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Line } from "recharts"
 
 interface OccupancyChartProps {
-    data: any[]
+    data: string[]
     height: string
 }
 
@@ -49,7 +49,20 @@ export function OccupancyChart({ data, height }: OccupancyChartProps) {
                             if (!active || !payload) return null;
                             return (
                                 <div className="rounded-lg border bg-background/80 backdrop-blur-sm p-2 shadow-sm">
-                                    <p className="text-xs text-muted-foreground">{label}</p>
+                                    <p className="text-xs text-muted-foreground">
+                                        {(() => {
+                                            const date = new Date(label)
+                                            return date.toLocaleDateString('zh-TW', {
+                                                year: 'numeric',
+                                                month: '2-digit',
+                                                day: '2-digit'
+                                            }) + ' ' + date.toLocaleTimeString('zh-TW', {
+                                                hour: '2-digit',
+                                                minute: '2-digit',
+                                                hour12: false
+                                            })
+                                        })()}
+                                    </p>
                                     {payload.map((entry) => (
                                         <p key={entry.name} className="text-sm font-medium flex items-center gap-2">
                                             <span className="w-2 h-2 rounded-full" style={{ background: entry.stroke }} />
@@ -67,10 +80,10 @@ export function OccupancyChart({ data, height }: OccupancyChartProps) {
                         stroke={colors.primary}
                         strokeWidth={2}
                         dot={{
-                            r: 3,
+                            r: 2,
                             fill: colors.background,
                             stroke: colors.primary,
-                            strokeWidth: 2
+                            strokeWidth: 4
                         }}
                         activeDot={{
                             r: 6,
