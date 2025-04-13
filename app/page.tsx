@@ -134,7 +134,7 @@ export default function Home() {
                     </div>
                     <div className="flex items-center gap-3 md:flex-row-reverse">
                       <a
-                        href="https://ndhu.lib.gov.tw"
+                        href="https://lib.ndhu.edu.tw"
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-primary hover:underline"
