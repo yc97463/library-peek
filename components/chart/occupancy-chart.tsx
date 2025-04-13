@@ -1,8 +1,14 @@
 import { Card } from "@/components/ui/card"
 import { CartesianGrid, LineChart, XAxis, YAxis, Tooltip, ResponsiveContainer, Line } from "recharts"
 
+interface OccupancyData {
+    time: string
+    count: number
+    trend?: number
+}
+
 interface OccupancyChartProps {
-    data: string[]
+    data: OccupancyData[]
     height: string
 }
 
@@ -13,11 +19,14 @@ export function OccupancyChart({ data, height }: OccupancyChartProps) {
         background: "#FFFFFF"
     }
 
+    // Filter out data points where count is 0
+    const filteredData = data.filter(item => item.count !== 0)
+
     return (
         <Card className="p-4">
             <ResponsiveContainer width="100%" height={parseInt(height)}>
                 <LineChart
-                    data={data}
+                    data={filteredData}
                     margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
                 >
                     <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={colors.muted} opacity={0.2} />
@@ -79,14 +88,15 @@ export function OccupancyChart({ data, height }: OccupancyChartProps) {
                         dataKey="count"
                         stroke={colors.primary}
                         strokeWidth={2}
+                        connectNulls
                         dot={{
-                            r: 2,
-                            fill: colors.background,
+                            r: 1.5,
+                            fill: colors.primary,
                             stroke: colors.primary,
                             strokeWidth: 4
                         }}
                         activeDot={{
-                            r: 6,
+                            r: 4,
                             fill: colors.primary,
                             stroke: colors.background,
                             strokeWidth: 2
