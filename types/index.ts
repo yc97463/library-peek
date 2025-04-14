@@ -9,4 +9,4 @@ export interface ChartData {
     trend: number
 }
 
-export type ViewMode = "all" | "3h" | "6h"
+export type ViewMode = "all" | "1h" | "3h" | "6h"

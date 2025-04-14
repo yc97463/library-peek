@@ -75,6 +75,13 @@ export function Controls({
                     全日
                 </Button>
                 <Button
+                    variant={viewMode === "1h" ? "default" : "outline"}
+                    onClick={() => onViewModeChange("1h")}
+                    className="cursor-pointer"
+                >
+                    近 1 小時
+                </Button>
+                <Button
                     variant={viewMode === "3h" ? "default" : "outline"}
                     onClick={() => onViewModeChange("3h")}
                     className="cursor-pointer"
