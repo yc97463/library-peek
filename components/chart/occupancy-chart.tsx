@@ -72,7 +72,7 @@ export function OccupancyChart({ data, height }: OccupancyChartProps) {
                                         {payload.map((entry) => (
                                             <p key={entry.name} className="text-sm font-medium flex items-center gap-2">
                                                 <span className="w-2 h-2 rounded-full" style={{ background: entry.stroke }} />
-                                                <span>{entry.name}: {entry.value}</span>
+                                                <span>{entry.name} {entry.value} 人</span>
                                             </p>
                                         ))}
                                     </div>

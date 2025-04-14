@@ -55,15 +55,18 @@ export default function Home() {
     }
   }
 
-  const processChartData = (data: OccupancyData[]): ChartData[] => {
+  const processChartData = (data: OccupancyData[], showEmpty: boolean = true): ChartData[] => {
     const counts = data.map(d => d.count)
     const trend = calculateTrend(counts)
 
-    return data.map((d, i) => ({
+    const processedData = data.map((d, i) => ({
       time: d.timestamp,
       count: d.count,
-      trend: trend[i]
+      trend: trend[i],
+      isEmpty: d.count === 0
     }))
+
+    return showEmpty ? processedData : processedData.filter(d => !d.isEmpty)
   }
 
   if (!dates?.length || !occupancy?.length) {
@@ -75,7 +78,7 @@ export default function Home() {
   }
 
   const filteredData = getFilteredData(occupancy)
-  const chartData = processChartData(filteredData)
+  const chartData = processChartData(filteredData, false) // false 表示不顯示空值點
 
   return (
     <div
