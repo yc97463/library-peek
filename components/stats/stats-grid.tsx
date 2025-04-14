@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, TrendingDown, Minus } from "lucide-react"
 import { StatsCard } from "./stats-card"
-import { OccupancyData, ViewMode } from "@/types"
+import { OccupancyData, ViewMode } from "@/types/index"
 
 export function StatsGrid({ data, viewMode }: { data: OccupancyData[], viewMode: ViewMode }) {
     if (!data.length) {

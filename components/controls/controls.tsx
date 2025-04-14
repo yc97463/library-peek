@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button"
 import { Maximize2, Minimize2, RefreshCw, Check } from "lucide-react"
 import { DateSelector } from "./date-selector"
-import { ViewMode } from "@/types"
+import { ViewMode } from "@/types/index"
 import { useState, useEffect } from "react"
 
 const REFRESH_INTERVAL = 180 // 3 minutes in seconds
