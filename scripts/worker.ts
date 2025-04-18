@@ -49,23 +49,22 @@ export default {
     },
 
     async fetch(req: Request, env: Env, ctx: WorkerContext) {
+        const origin = req.headers.get("Origin") || "";
+        const isLocalhost = origin.startsWith("http://localhost");
+        const isGithubPages = origin === "https://yc97463.github.io";
+        const corsHeaders = {
+            "Access-Control-Allow-Origin": (isLocalhost || isGithubPages) ? origin : "",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+            "Access-Control-Allow-Headers": "*",
+        };
+
         // Handle CORS preflight requests
         if (req.method === "OPTIONS") {
-            return new Response(null, {
-                headers: {
-                    "Access-Control-Allow-Origin": "https://yc97463.github.io",
-                    "Access-Control-Allow-Methods": "GET, OPTIONS",
-                    "Access-Control-Allow-Headers": "*",
-                }
-            });
+            return new Response(null, { headers: corsHeaders });
         }
 
         const url = new URL(req.url);
         const date = url.searchParams.get("date");
-        const corsHeaders = {
-            "Access-Control-Allow-Origin": "https://yc97463.github.io",
-            "Access-Control-Allow-Methods": "GET, OPTIONS",
-        };
 
         if (url.pathname === "/api/latest") {
             const latest = await env.LIBRARY_PEOPLE.get("latest", { type: "json" }) as LogEntry | null;
