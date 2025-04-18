@@ -1,0 +1,10 @@
+name = "library-peek"
+main = "scripts/worker.ts"
+compatibility_date = "2024-04-15"
+
+[triggers]
+crons = ["*/1 * * * *"] # 每分鐘抓一次
+
+[[kv_namespaces]]
+binding = "LIBRARY_PEOPLE"
+id = "f8d9b208984a408687c7058abd8f2f8f"
