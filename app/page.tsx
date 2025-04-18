@@ -47,11 +47,11 @@ export default function Home() {
   const getFilteredData = (data: OccupancyData[]) => {
     switch (viewMode) {
       case "1h":
-        return data.slice(-12);
+        return data.slice(-60); // 60 points for each minute in 1 hour
       case "3h":
-        return data.slice(-36); // 36 points for each 5 minutes in 3 hours
+        return data.slice(-180);
       case "6h":
-        return data.slice(-72);
+        return data.slice(-360);
       default:
         return data;
     }
