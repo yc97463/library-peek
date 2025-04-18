@@ -125,7 +125,7 @@ export default function Home() {
                   <div className="flex flex-col space-y-3 text-sm text-muted-foreground">
                     <div className="flex items-center gap-3">
                       <Clock className="h-4 w-4 text-primary/70" />
-                      <span>資料每 5 分鐘更新一次</span>
+                      <span>資料每 1 分鐘更新一次</span>
                     </div>
                     <div className="flex items-center gap-3">
                       <Globe className="h-4 w-4 text-primary/70" />
