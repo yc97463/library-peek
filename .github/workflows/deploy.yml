@@ -4,8 +4,8 @@ on:
   push:
     branches: main
   workflow_dispatch:
-  schedule:
-    - cron: "5,10,15,20,25,30,35,40,45,50,55,00 * * * *"  # 每 5 分鐘執行一次
+  # schedule:
+  #   - cron: "5,10,15,20,25,30,35,40,45,50,55,00 * * * *"  # 每 5 分鐘執行一次
 
 jobs:
   deploy:
@@ -25,24 +25,24 @@ jobs:
       - name: Install dependencies
         run: npm install
 
-      - name: Run crawler (Node.js)
-        run: npm run fetch
+      # - name: Run crawler (Node.js)
+      #   run: npm run fetch
 
       - name: Build Next.js application
         run: npm run build
         env:
           NEXT_PUBLIC_BASE_PATH: /library-peek
 
-      - name: Commit new data
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
-          git add public/data/
-          git commit -m "Update library occupancy data" || echo "No changes to commit"
-          git push
+      # - name: Commit new data
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      #   run: |
+      #     git config --local user.email "github-actions[bot]@users.noreply.github.com"
+      #     git config --local user.name "github-actions[bot]"
+      #     git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.git
+      #     git add public/data/
+      #     git commit -m "Update library occupancy data" || echo "No changes to commit"
+      #     git push
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
