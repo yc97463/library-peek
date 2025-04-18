@@ -2,6 +2,7 @@ import { Badge } from "@/components/ui/badge"
 import { TrendingUp, TrendingDown, Minus } from "lucide-react"
 import { StatsCard } from "./stats-card"
 import { OccupancyData, ViewMode } from "@/types/index"
+import { AnimatedValue } from "./animated-value"
 
 export function StatsGrid({ data, viewMode }: { data: OccupancyData[], viewMode: ViewMode }) {
     if (!data.length) {
@@ -48,10 +49,10 @@ export function StatsGrid({ data, viewMode }: { data: OccupancyData[], viewMode:
     const trendInfo = getTrendInfo()
 
     return (
-        <div className="grid gap-4 md:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
             <StatsCard
                 title="目前人數"
-                value={currentCount}
+                value={<AnimatedValue value={currentCount} />}
                 extra={trendInfo.badge}
                 className={trendInfo.className}
                 icon={trendInfo.icon}

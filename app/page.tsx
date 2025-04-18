@@ -8,7 +8,7 @@ import { OccupancyChart } from "@/components/chart/occupancy-chart"
 import { calculateTrend } from "@/lib/utils"
 import { OccupancyData, ChartData, ViewMode } from "@/types/index"
 import { Clock, Globe, Book, Calendar } from "lucide-react"
-// import { motion } from "motion/react"
+import { motion } from "motion/react"
 import { LoadingSpinner } from "@/components/loading"
 
 export default function Home() {
