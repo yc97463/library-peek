@@ -49,25 +49,43 @@ export default {
     },
 
     async fetch(req: Request, env: Env, ctx: WorkerContext) {
+        // Handle CORS preflight requests
+        if (req.method === "OPTIONS") {
+            return new Response(null, {
+                headers: {
+                    "Access-Control-Allow-Origin": "https://yc97463.github.io",
+                    "Access-Control-Allow-Methods": "GET, OPTIONS",
+                    "Access-Control-Allow-Headers": "*",
+                }
+            });
+        }
+
         const url = new URL(req.url);
         const date = url.searchParams.get("date");
+        const corsHeaders = {
+            "Access-Control-Allow-Origin": "https://yc97463.github.io",
+            "Access-Control-Allow-Methods": "GET, OPTIONS",
+        };
 
         if (url.pathname === "/api/latest") {
             const latest = await env.LIBRARY_PEOPLE.get("latest", { type: "json" }) as LogEntry | null;
-            return Response.json(latest ?? { count: null, timestamp: null });
+            return Response.json(latest ?? { count: null, timestamp: null }, { headers: corsHeaders });
         }
 
         if (url.pathname === "/api/daily" && date) {
             const logs = await env.LIBRARY_PEOPLE.get(`log:${date}`, { type: "json" }) as LogEntry[] | null;
-            return Response.json(logs ?? []);
+            return Response.json(logs ?? [], { headers: corsHeaders });
         }
 
         if (url.pathname === "/api/dates") {
             const dates = await env.LIBRARY_PEOPLE.get("dates", { type: "json" });
-            return Response.json(dates ?? []);
+            return Response.json(dates ?? [], { headers: corsHeaders });
         }
 
-        return new Response("Not Found", { status: 404 });
+        return new Response("Not Found", {
+            status: 404,
+            headers: corsHeaders
+        });
     }
 };
 
