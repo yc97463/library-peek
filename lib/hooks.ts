@@ -12,7 +12,7 @@ const fetchOptions = {
 const apiEndpoint = process.env.NEXT_PUBLIC_API_ENDPOINT || 'https://library-peek.deershark-tech.workers.dev/api';
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
 
-const fetcher = (url: string) => fetch(`${apiEndpoint}${basePath}${url}`, fetchOptions).then(res => res.json())
+const fetcher = (url: string) => fetch(`${apiEndpoint}${url}`, fetchOptions).then(res => res.json())
 
 export function useDates() {
     return useSWR('/dates', fetcher, {
