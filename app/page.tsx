@@ -20,7 +20,7 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (dates?.length) setSelectedDate(dates[dates.length - 1])
+    if (Array.isArray(dates) && dates.length) setSelectedDate(dates[dates.length - 1])
   }, [dates])
 
   useEffect(() => {
@@ -71,7 +71,7 @@ export default function Home() {
     return showEmpty ? processedData : processedData.filter(d => !d.isEmpty)
   }
 
-  if (!dates?.length || !occupancy?.length) {
+  if ((!Array.isArray(dates) || !dates.length) || (!Array.isArray(occupancy) || !occupancy.length)) {
     return (
       <div className="flex h-screen items-center justify-center">
         <LoadingSpinner />
