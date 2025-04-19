@@ -3,7 +3,7 @@ main = "scripts/worker.ts"
 compatibility_date = "2024-04-15"
 
 [triggers]
-crons = ["*/1 * * * *"] # 每分鐘抓一次
+crons = ["*/5 * * * *"] # 每分鐘抓一次
 
 [[kv_namespaces]]
 binding = "LIBRARY_PEOPLE"
